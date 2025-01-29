@@ -1,53 +1,31 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <title>Classificação de Emails</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 30px;
-        }
-        h1 {
-            color: #333;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        textarea {
-            width: 100%;
-            height: 150px;
-        }
-        .result {
-            margin-top: 20px;
-            background: #f9f9f9;
-            padding: 10px;
-        }
-        .label {
-            font-weight: bold;
-        }
-    </style>
+    <meta charset="UTF-8" />
+    <title>Classificador de Emails</title>
 </head>
 <body>
-    <div class="container">
-        <h1>Classificação de Emails</h1>
-        <form id="email-form" action="/processar" method="POST" enctype="multipart/form-data">
-            <label for="emailText">Cole o texto do email:</label><br>
-            <textarea name="emailText" id="emailText"></textarea><br><br>
-            
-            <label for="file">Ou faça upload do arquivo (.txt ou .pdf):</label><br>
-            <input type="file" name="file" id="file" accept=".txt,.pdf"><br><br>
-            
-            <button type="submit">Enviar para Processamento</button>
-        </form>
-        
-        {% if classificacao %}
-        <div class="result">
-            <p><span class="label">Categoria:</span> {{ classificacao }}</p>
-            <p><span class="label">Resposta Sugerida:</span> {{ resposta_sugerida }}</p>
-        </div>
-        {% endif %}
-    </div>
+    <h1>Classificador de Emails</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <label>Selecione um arquivo (.txt ou .pdf):</label><br>
+        <input type="file" name="emailFile" accept=".txt,.pdf"><br><br>
+
+        <label>Cole o texto do email:</label><br>
+        <textarea name="emailText" rows="6" cols="60"></textarea><br><br>
+
+        <button type="submit">Classificar e Gerar Resposta</button>
+    </form>
+
+    {% if error %}
+      <p style="color:red;">{{ error }}</p>
+    {% endif %}
+
+    {% if classification %}
+      <hr>
+      <p><strong>Email Original:</strong> {{ original_text }}</p>
+      <p><strong>Classificação:</strong> {{ classification }}</p>
+      <p><strong>Resposta Sugerida:</strong></p>
+      <p>{{ response_suggestion }}</p>
+    {% endif %}
 </body>
 </html>
