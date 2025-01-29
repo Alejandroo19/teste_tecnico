@@ -1,0 +1,1 @@
+web: python meu_projeto/app.py
