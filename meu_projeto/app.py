@@ -7,40 +7,32 @@ from PyPDF2 import PdfReader
 
 app = Flask(__name__)
 
-# ✅ Função de Pré-processamento (sem NLTK)
+
 def preprocess_text(text):
-    """
-    Faz o pré-processamento do texto:
-    - Converte para minúsculas
-    - Remove acentos
-    - Remove pontuações
-    - Remove números
-    - Remove múltiplos espaços
-    """
     if not text:
         return ""
 
-    # Converte para minúsculas
+    
     text = text.lower()
 
-    # Remove acentos
+    
     text = ''.join(
         c for c in unicodedata.normalize('NFD', text)
         if unicodedata.category(c) != 'Mn'
     )
 
-    # Remove pontuação e caracteres especiais
+    
     text = re.sub(r'[^\w\s]', '', text)
 
-    # Remove números
+   
     text = re.sub(r'\d+', '', text)
 
-    # Remove múltiplos espaços
+  
     text = re.sub(r'\s+', ' ', text).strip()
 
     return text
 
-# ✅ Função para extrair texto de arquivos PDF/TXT
+
 def extract_text_from_file(file):
     extension = os.path.splitext(file.filename)[1].lower()
     if extension == ".txt":
@@ -51,16 +43,16 @@ def extract_text_from_file(file):
         return "\n".join(pages)
     return ""
 
-# ✅ Função para classificar email (inclui pré-processamento)
+
 def classify_email(email_text: str) -> str:
     """
     Classifica o email como "Produtivo" ou "Improdutivo" com reforço no contexto e verificação manual.
     """
     try:
-        # Preprocessa o texto
+      
         cleaned_text = preprocess_text(email_text)
 
-        # Prompt para o modelo GPT
+       
         prompt = f"""
 Você é um classificador inteligente de emails. Sua função é classificar emails como "Produtivo" ou "Improdutivo".
 
@@ -100,16 +92,16 @@ Retorne SOMENTE a palavra "Produtivo" ou "Improdutivo".
             temperature=0.0
         )
 
-        # Processa a resposta do GPT
+       
         classification_text = response.choices[0].message.content.strip()
 
-        # Verificação manual baseada em palavras-chave (reforço)
+        
         keywords_improdutivo = ["parabéns", "obrigado", "felicitações", "bom dia", "boa tarde", "feliz aniversário"]
         for keyword in keywords_improdutivo:
             if keyword in cleaned_text.lower():
                 return "Improdutivo"
 
-        # Retorna a classificação do GPT, se não for capturada pelas palavras-chave
+       
         if "produtivo" in classification_text.lower():
             return "Produtivo"
         return "Improdutivo"
@@ -118,7 +110,7 @@ Retorne SOMENTE a palavra "Produtivo" ou "Improdutivo".
         print("Erro na classificação:", e)
         return "Improdutivo"
 
-# ✅ Função para gerar resposta baseada na classificação
+
 def generate_response(category: str, email_text: str) -> str:
     if category.lower() == "produtivo":
         try:
@@ -161,13 +153,13 @@ def index():
         if not user_text.strip():
             return render_template("index.html", error="Nenhum conteúdo fornecido!")
 
-        # 🔥 Aplica pré-processamento antes da classificação
+       
         processed_text = preprocess_text(user_text)
 
-        # 🔥 Classifica o email
+   
         classification = classify_email(processed_text)
 
-        # 🔥 Gera resposta automática
+        
         response_text = generate_response(classification, user_text)
 
         return render_template(
