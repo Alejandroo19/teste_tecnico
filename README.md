@@ -15,7 +15,7 @@ O projeto possui uma interface web moderna, desenvolvida com **Flask** e **Boots
 ## 🎥 Demonstração
 Acesse a aplicação online clicando no link abaixo:
 
-🔗 **[Classificador de Emails - Deploy no Render](https://seu-link-no-render.com)**
+🔗 **[Classificador de Emails - Deploy no Render](https://case-pratico.onrender.com/)**
 
 *(Caso o serviço esteja em suspensão, pode levar alguns segundos para iniciar após o primeiro acesso.)*
 
@@ -49,5 +49,26 @@ Acesse a aplicação online clicando no link abaixo:
 
 ### 1️⃣ Clone o repositório
 ```bash
-git clone https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git
-cd SEU_REPOSITORIO
+git clone https:/(https://github.com/Alejandroo19/teste_tecnico.git)
+```
+
+### 2️⃣ Crie um ambiente virtual e ative-o
+
+- Criar o ambiente virtual
+python -m venv venv
+
+- Ativar no Windows:
+venv\Scripts\activate
+
+- Ativar no Mac/Linux:
+source venv/bin/activate
+source venv/bin/activate
+
+### 3️⃣ Instale as dependências
+- pip install -r requirements.txt
+
+### 5️⃣ Rode o servidor Flask
+
+```bash
+python app.py
+```
