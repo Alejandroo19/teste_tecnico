@@ -2,7 +2,7 @@
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Classificador de Emails</title>
 
     <!-- Bootstrap CSS -->
@@ -12,7 +12,7 @@
     <style>
         body {
             background-color: #121212;
-            color: #ffffff; /* Letras brancas */
+            color: #ffffff;
             font-family: Arial, sans-serif;
         }
         .container {
@@ -22,26 +22,21 @@
         .card {
             background: #1e1e1e;
             border: 1px solid #333;
-            color: #ffffff; /* Letras brancas nos cards */
         }
         .form-label {
-            color: #ffffff; /* Letras brancas nos labels */
+            color: #ffffff;
         }
         .btn-primary {
             background-color: #0d6efd;
             border: none;
-            color: #ffffff;
         }
         .btn-primary:hover {
             background-color: #0b5ed7;
         }
         textarea, input {
             background: #2a2a2a;
-            color: #ffffff; /* Texto branco nos inputs */
+            color: #ffffff;
             border: 1px solid #555;
-        }
-        textarea::placeholder {
-            color: #bbbbbb;
         }
         .navbar {
             background: linear-gradient(90deg, #0d6efd, #6610f2);
@@ -49,42 +44,62 @@
         .alert {
             color: #ffffff;
             background: #d9534f;
-            border: 1px solid #a94442;
+        }
+        .classification-card h4 {
+            color: #ffffff;
+        }
+        .classification-card p {
+            color: #ffffff;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 4px solid #3498db;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            display: none;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark justify-content-center">
-      <div class="container">
-          <a class="navbar-brand text-center w-100" href="#">
-              <i class="fas fa-envelope-open-text"></i> Classificador de Emails
-          </a>
-      </div>
-  </nav>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container justify-content-center">
+            <a class="navbar-brand text-center" href="#">
+                <i class="fas fa-envelope"></i> Classificador de Emails
+            </a>
+        </div>
+    </nav>
 
     <div class="container">
         <!-- Card Principal -->
         <div class="card shadow-lg p-4">
-            <h3 class="text-center mb-3"><i class="fas fa-inbox"></i> Insira seu email</h3>
+            <h3 class="text-center mb-3 " style="color: #0b5ed7;"><i class="fas fa-inbox"></i> Insira seu email</h3>
 
             <!-- Formulário -->
-            <form method="POST" enctype="multipart/form-data">
+            <form method="POST" enctype="multipart/form-data" onsubmit="showLoader()">
                 <div class="mb-3">
                     <label class="form-label"><i class="fas fa-file-alt"></i> Selecione um arquivo (.txt ou .pdf):</label>
                     <input type="file" class="form-control" name="emailFile" accept=".txt,.pdf">
                 </div>
-
                 <div class="mb-3">
                     <label class="form-label"><i class="fas fa-keyboard"></i> Ou cole o texto do email:</label>
                     <textarea class="form-control" name="emailText" rows="5" placeholder="Digite o email aqui..."></textarea>
                 </div>
-
                 <button type="submit" class="btn btn-primary w-100">
                     <i class="fas fa-paper-plane"></i> Classificar e Gerar Resposta
                 </button>
             </form>
+
+            <!-- Loader -->
+            <div class="loader" id="loader"></div>
 
             <!-- Mensagem de erro -->
             {% if error %}
@@ -96,7 +111,7 @@
 
         <!-- Exibição dos resultados -->
         {% if classification %}
-        <div class="card shadow-lg p-4 mt-4">
+        <div class="card shadow-lg p-4 mt-4 classification-card">
             <h4 class="text-center text-warning"><i class="fas fa-info-circle"></i> Resultado da Classificação</h4>
             <hr>
             <p><strong>Email Original:</strong></p>
@@ -109,13 +124,31 @@
             </p>
 
             <p><strong>Resposta Sugerida:</strong></p>
-            <div class="bg-secondary p-3 rounded text-white">{{ response_suggestion }}</div>
+            <div class="bg-secondary p-3 rounded text-white" id="responseText">{{ response_suggestion }}</div>
+            <button class="btn btn-secondary mt-3" onclick="copyToClipboard()">
+                <i class="fas fa-copy"></i> Copiar Resposta
+            </button>
         </div>
         {% endif %}
     </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function showLoader() {
+            document.getElementById('loader').style.display = 'block';
+        }
+
+        function copyToClipboard() {
+            const responseText = document.getElementById('responseText').innerText;
+            navigator.clipboard.writeText(responseText).then(() => {
+                alert('Resposta copiada para a área de transferência!');
+            }).catch(err => {
+                console.error('Erro ao copiar para a área de transferência:', err);
+            });
+        }
+    </script>
 
 </body>
 </html>

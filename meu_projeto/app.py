@@ -53,38 +53,66 @@ def extract_text_from_file(file):
 
 # ✅ Função para classificar email (inclui pré-processamento)
 def classify_email(email_text: str) -> str:
+    """
+    Classifica o email como "Produtivo" ou "Improdutivo" com reforço no contexto e verificação manual.
+    """
     try:
-        # 🔥 Aplica pré-processamento ANTES de enviar para a IA
+        # Preprocessa o texto
         cleaned_text = preprocess_text(email_text)
 
+        # Prompt para o modelo GPT
         prompt = f"""
-O usuário enviou este email:
-\"\"\"{cleaned_text}\"\"\"  
+Você é um classificador inteligente de emails. Sua função é classificar emails como "Produtivo" ou "Improdutivo".
 
-Classifique como:
-- "Produtivo" se o email requer ação ou resposta (ex: suporte técnico, pergunta, etc.).
-- "Improdutivo" se for apenas felicitações, agradecimentos ou não requer ação.
+### Definições:
+- **Produtivo:** O email requer ação ou resposta direta. Exemplos incluem solicitações de suporte técnico, perguntas específicas ou problemas relatados.
+- **Improdutivo:** O email não requer nenhuma ação direta, sendo apenas mensagens de cortesia, agradecimentos, felicitações ou conteúdo irrelevante.
 
-Exemplos:
-1. "Olá, como você está?" → Improdutivo  
-2. "Preciso de ajuda para acessar o sistema" → Produtivo  
-3. "Obrigado pelo suporte!" → Improdutivo  
-4. "Qual o status do meu pedido?" → Produtivo  
+### Exemplos de emails:
+
+✅ **Produtivo:**
+- "Oi, gostaria de saber o status do meu pedido."
+- "Estou tendo problemas para acessar minha conta."
+- "Vocês oferecem suporte técnico?"
+- "Preciso de informações sobre o pagamento."
+
+❌ **Improdutivo:**
+- "Obrigado pelo suporte!"
+- "Parabéns à equipe pelo excelente trabalho!"
+- "Desejo a todos um bom dia!"
+- "Feliz aniversário!"
+- "Agradeço pela resposta rápida."
+
+**IMPORTANTE:**
+- Classifique o seguinte email:
+\"\"\"{cleaned_text}\"\"\"
 
 Retorne SOMENTE a palavra "Produtivo" ou "Improdutivo".
 """
+        # Chamada para o GPT
         response = openai.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "Você é um classificador de emails."},
+                {"role": "system", "content": "Você é um classificador de emails profissional."},
                 {"role": "user", "content": prompt}
             ],
             max_tokens=10,
             temperature=0.0
         )
+
+        # Processa a resposta do GPT
         classification_text = response.choices[0].message.content.strip()
 
-        return "Produtivo" if "produtivo" in classification_text.lower() else "Improdutivo"
+        # Verificação manual baseada em palavras-chave (reforço)
+        keywords_improdutivo = ["parabéns", "obrigado", "felicitações", "bom dia", "boa tarde", "feliz aniversário"]
+        for keyword in keywords_improdutivo:
+            if keyword in cleaned_text.lower():
+                return "Improdutivo"
+
+        # Retorna a classificação do GPT, se não for capturada pelas palavras-chave
+        if "produtivo" in classification_text.lower():
+            return "Produtivo"
+        return "Improdutivo"
 
     except Exception as e:
         print("Erro na classificação:", e)
